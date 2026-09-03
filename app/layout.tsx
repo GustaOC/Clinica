@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import '@fontsource-variable/inter/latin.css';
-import '@fontsource-variable/lora/latin.css';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/lora';
 import './globals.css';
 import { siteOrigin } from '@/lib/contact';
 
