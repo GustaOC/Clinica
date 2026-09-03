@@ -25,9 +25,9 @@ npm start
 
 Os 7 testes automatizados de contatos e bloqueio da API passaram. A verificação de sintaxe dos arquivos e `git diff --check` também passaram.
 
-**A compilação de produção ainda não foi validada.** A instalação das novas dependências foi interrompida por erros de rede (`EIDLETIMEOUT`), mesmo após tentativas alternativas. O lockfile foi atualizado, mas o Next.js ainda não está instalado neste ambiente: `npm run build` retorna `next: not found`, e a checagem de tipos acusa os módulos Next.js ausentes. Não houve prévia executável, teste de navegador ou medição de performance desta versão.
+**A compilação de produção foi validada em 03/09/2026.** Após concluir a instalação, foram corrigidos os imports das fontes para as entradas padrão de `@fontsource-variable/inter` e `@fontsource-variable/lora`: esses pacotes não contêm `latin.css`. O comando `npm run build` passou, incluindo TypeScript e geração das páginas. A validação local usou Node.js 26.7.0; a configuração de destino na Vercel continua Node.js 24.x. Não houve teste de navegador ou medição de performance.
 
-Após concluir `npm ci` com Node.js 24 e conexão estável, execute a sequência acima. O lint completo também encontrou avisos/erros preexistentes em componentes genéricos de `components/ui` e `hooks/use-mobile.ts`, fora do redesign; não foram mascarados nem removidos.
+Para reproduzir, execute a sequência acima com Node.js 24. O lint completo também encontrou avisos/erros preexistentes em componentes genéricos de `components/ui` e `hooks/use-mobile.ts`, fora do redesign; não foram mascarados nem removidos.
 
 Para conferir as respostas HTTP após subir `npm start`, execute em outro terminal:
 
@@ -35,7 +35,7 @@ Para conferir as respostas HTTP após subir `npm start`, execute em outro termin
 node tests/http-smoke.mjs
 ```
 
-Esse teste cobre as páginas públicas e a recusa de acesso à API clínica; ainda está pendente de execução.
+Esse teste passou contra o servidor de produção local: as quatro páginas públicas retornaram HTTP 200, e GET/POST da API clínica continuaram retornando HTTP 503 sem acesso a prontuários.
 
 ## Publicar na Vercel
 
