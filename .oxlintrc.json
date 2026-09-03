@@ -23,6 +23,7 @@
     "typeCheck": true
   },
   "ignorePatterns": [
+    "legacy/**",
     ".next/**",
     ".vinext/**",
     "out/**",

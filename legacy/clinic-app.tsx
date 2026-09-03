@@ -1,5 +1,8 @@
 'use client';
 
+// Historical UI prototype, kept for a future authenticated management portal.
+// Not imported by the public website or exposed as a Next.js route.
+
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, Bell, CalendarDays, Camera, Check,
