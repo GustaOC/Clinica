@@ -5,7 +5,7 @@ Sistema web privado em Next.js para a profissional criar um planejamento e gerar
 ## O que já está implementado
 
 - envio de múltiplas fotos JPG, PNG ou WebP, com normalização no navegador e no servidor;
-- planejamento guiado por procedimento, produto, regiões, intensidade visual e perguntas próprias do catálogo;
+- planejamento guiado por procedimento, produto, regiões e parâmetros visuais específicos, além das perguntas próprias do catálogo;
 - uma chamada Gemini independente por foto, fila pausável e nova tentativa individual;
 - comparação antes/depois e exportação com a marca “SIMULAÇÃO IA · RESULTADO ILUSTRATIVO” gravada na imagem;
 - histórico por conta, plano imutável e armazenamento privado no Supabase;
@@ -30,15 +30,10 @@ Sem as variáveis, a interface abre normalmente em estado de configuração e n�
 
 1. Crie um projeto no Supabase.
 2. Abra o SQL Editor e execute todo o arquivo `supabase/migrations/202609030001_aesthetic_simulations.sql` uma única vez.
-3. Em Authentication > Users, crie a conta da administradora.
-4. Copie o UUID dessa conta e execute no SQL Editor, substituindo apenas o UUID:
+3. Em Authentication > Users, crie a conta `admin@clinica.com.br` com uma senha inicial forte. A senha não deve ser colocada no código.
+4. No SQL Editor, execute o arquivo `supabase/bootstrap-admin.sql`. Ele encontra essa conta pelo e-mail e libera o papel `admin`.
 
-```sql
-insert into public.aesthetic_members (user_id, role)
-values ('UUID_DA_CONTA', 'admin');
-```
-
-Para outra profissional, use `doctor`. Uma conta de Authentication sem linha ativa em `aesthetic_members` não acessa o sistema.
+Para outra profissional, crie o usuário e adicione seu UUID com o papel `doctor`. Uma conta de Authentication sem linha ativa em `aesthetic_members` não acessa o sistema. O aplicativo utiliza apenas e-mail e senha e não habilita login pelo Google.
 
 5. Em Project Settings > API, copie a Project URL e a chave publishable. Se o projeto ainda mostrar somente a chave `anon`, ela também é aceita pelo código via `SUPABASE_ANON_KEY`, mas a variável recomendada é `SUPABASE_PUBLISHABLE_KEY`.
 

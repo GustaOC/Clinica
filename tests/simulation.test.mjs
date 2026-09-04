@@ -28,7 +28,9 @@ const product = {
 };
 const input = {
   regions: ['Região A'],
-  intensity: 'Discreta',
+  region_options: {
+    'Região A': { intensidade_visual: 'Discreta' },
+  },
   answers: { 'question-1': 'A' },
   quantity: '',
   notes: 'Preservar características não selecionadas.',
@@ -64,8 +66,49 @@ test('planning accepts only catalog-compatible choices', () => {
 test('prompt limits the edit and does not treat quantity as predicted effect', () => {
   const prompt = simulationPrompt(buildPlan(input, procedure, product));
   assert.match(prompt, /Preserve identidade/);
+  assert.match(prompt, /ajustes_por_regiao/);
+  assert.match(prompt, /intensidade_visual|Intensidade visual/);
   assert.match(prompt, /não infira correspondência entre dose e aparência/i);
   assert.match(prompt, /não representa promessa de resultado/i);
+});
+
+test('every selected region requires all of its structured parameters', () => {
+  const lipsProcedure = {
+    ...procedure,
+    regions: ['Lábios'],
+    questions: [],
+  };
+  const lipsProduct = { ...product, procedure_id: lipsProcedure.id };
+  assert.throws(
+    () =>
+      buildPlan(
+        {
+          ...input,
+          regions: ['Lábios'],
+          region_options: { Lábios: { volume: 'Discreto' } },
+          answers: {},
+        },
+        lipsProcedure,
+        lipsProduct,
+      ),
+    /projeção para Lábios/i,
+  );
+  const plan = buildPlan(
+    {
+      ...input,
+      regions: ['Lábios'],
+      region_options: {
+        Lábios: { volume: 'Moderado', projecao: 'Discreta' },
+      },
+      answers: {},
+    },
+    lipsProcedure,
+    lipsProduct,
+  );
+  assert.deepEqual(plan.region_options.Lábios, {
+    volume: 'Moderado',
+    projecao: 'Discreta',
+  });
 });
 
 test('Gemini request sends one photo server-side and returns its image', async () => {

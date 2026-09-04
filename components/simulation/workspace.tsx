@@ -42,7 +42,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import {
-  INTENSITIES,
+  controlsForRegion,
   type Procedure,
   type Product,
   type SavedPhoto,
@@ -115,7 +115,9 @@ export function SimulationWorkspace() {
   const [procedureId, setProcedureId] = useState(''),
     [productId, setProductId] = useState(''),
     [regions, setRegions] = useState<string[]>([]);
-  const [intensity, setIntensity] = useState('Discreta'),
+  const [regionOptions, setRegionOptions] = useState<
+      Record<string, Record<string, string>>
+    >({}),
     [answers, setAnswers] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(''),
     [notes, setNotes] = useState(''),
@@ -146,6 +148,13 @@ export function SimulationWorkspace() {
     procedure &&
     regions.length &&
     (!procedure.requires_product || productId) &&
+    regions.every((region) =>
+      controlsForRegion(region).every(
+        (control) =>
+          regionOptions[region]?.[control.id] &&
+          control.options.includes(regionOptions[region][control.id]),
+      ),
+    ) &&
     procedure.questions.every((q) => answers[q.id]),
   );
   const frozen = Boolean(session) || busy;
@@ -226,8 +235,8 @@ export function SimulationWorkspace() {
     setProcedureId('');
     setProductId('');
     setRegions([]);
+    setRegionOptions({});
     setAnswers({});
-    setIntensity('Discreta');
     setQuantity('');
     setNotes('');
     setTitle('');
@@ -282,6 +291,21 @@ export function SimulationWorkspace() {
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
     if (selectedId === photo.id) setSelectedId('');
   }
+  function toggleRegion(region: string) {
+    const removing = regions.includes(region);
+    setRegions((current) =>
+      removing
+        ? current.filter((item) => item !== region)
+        : [...current, region],
+    );
+    if (removing) {
+      setRegionOptions((current) => {
+        const next = { ...current };
+        delete next[region];
+        return next;
+      });
+    }
+  }
   const updatePhoto = (id: string, changes: Partial<Photo>) =>
     setPhotos((prev) =>
       prev.map((p) => (p.id === id ? { ...p, ...changes } : p)),
@@ -306,7 +330,7 @@ export function SimulationWorkspace() {
     setProcedureId(item.plan.procedure.id);
     setProductId(item.plan.product?.id || '');
     setRegions(item.plan.regions);
-    setIntensity(item.plan.intensity);
+    setRegionOptions(item.plan.region_options || {});
     setAnswers(item.plan.answers);
     setQuantity(item.plan.quantity);
     setNotes(item.plan.notes);
@@ -345,7 +369,7 @@ export function SimulationWorkspace() {
             procedure_id: procedureId,
             product_id: productId || null,
             regions,
-            intensity,
+            region_options: regionOptions,
             answers,
             quantity,
             notes,
@@ -1000,6 +1024,7 @@ export function SimulationWorkspace() {
                                     setProcedureId(p.id);
                                     setProductId('');
                                     setRegions([]);
+                                    setRegionOptions({});
                                     setAnswers({});
                                   }}
                                 />
@@ -1088,41 +1113,82 @@ export function SimulationWorkspace() {
                                   <input
                                     type="checkbox"
                                     checked={regions.includes(r)}
-                                    onChange={() =>
-                                      setRegions((prev) =>
-                                        prev.includes(r)
-                                          ? prev.filter((x) => x !== r)
-                                          : [...prev, r],
-                                      )
-                                    }
+                                    onChange={() => toggleRegion(r)}
                                   />
                                   <span>{r}</span>
                                 </label>
                               ))}
                             </div>
                           </fieldset>
-                          <fieldset disabled={frozen}>
-                            <legend>
-                              <b>4</b>Qual a intensidade visual?
-                            </legend>
-                            <div className="choice-pills">
-                              {INTENSITIES.map((value) => (
-                                <label key={value} className="choice-pill">
-                                  <input
-                                    type="radio"
-                                    name="intensity"
-                                    checked={intensity === value}
-                                    onChange={() => setIntensity(value)}
-                                  />
-                                  <span>{value}</span>
-                                </label>
-                              ))}
-                            </div>
-                            <p className="app-hint">
-                              Orienta a imagem; não representa dose ou resultado
-                              clínico previsto.
-                            </p>
-                          </fieldset>
+                          {regions.length > 0 && (
+                            <section className="region-planning">
+                              <div className="region-planning-heading">
+                                <b>4</b>
+                                <div>
+                                  <strong>Como ajustar cada região?</strong>
+                                  <small>
+                                    Escolhas visuais estruturadas, sem texto
+                                    livre para a IA.
+                                  </small>
+                                </div>
+                              </div>
+                              <div className="region-control-grid">
+                                {regions.map((region) => (
+                                  <fieldset
+                                    className="region-control-card"
+                                    key={region}
+                                    disabled={frozen}
+                                  >
+                                    <legend>{region}</legend>
+                                    {controlsForRegion(region).map(
+                                      (control) => (
+                                        <div
+                                          className="region-parameter"
+                                          key={control.id}
+                                        >
+                                          <span>{control.label}</span>
+                                          <div className="choice-pills compact">
+                                            {control.options.map((value) => (
+                                              <label
+                                                key={value}
+                                                className="choice-pill"
+                                              >
+                                                <input
+                                                  type="radio"
+                                                  name={`${region}-${control.id}`}
+                                                  checked={
+                                                    regionOptions[region]?.[
+                                                      control.id
+                                                    ] === value
+                                                  }
+                                                  onChange={() =>
+                                                    setRegionOptions(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [region]: {
+                                                          ...prev[region],
+                                                          [control.id]: value,
+                                                        },
+                                                      }),
+                                                    )
+                                                  }
+                                                />
+                                                <span>{value}</span>
+                                              </label>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      ),
+                                    )}
+                                  </fieldset>
+                                ))}
+                              </div>
+                              <p className="app-hint">
+                                Estes parâmetros orientam a imagem e não
+                                representam dose ou resultado clínico previsto.
+                              </p>
+                            </section>
+                          )}
                           {procedure.questions.map((q, i) => (
                             <fieldset key={q.id} disabled={frozen}>
                               <legend>
@@ -1455,6 +1521,9 @@ function SettingsView({
           <p>
             Contas das profissionais, catálogo e armazenamento privado das fotos
             e simulações.
+          </p>
+          <p className="app-hint">
+            O acesso é somente por e-mail e senha. Não há login pelo Google.
           </p>
           <ol>
             <li>Crie o projeto Supabase.</li>

@@ -781,6 +781,82 @@
   font-weight: 400;
   opacity: 0.7;
 }
+.region-planning {
+  display: grid;
+  gap: 14px;
+  padding-top: 2px;
+}
+.region-planning-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #4b6280;
+}
+.region-planning-heading > b {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #edf3ff;
+  color: #5982c9;
+  font-size: 9px;
+  font-weight: 500;
+}
+.region-planning-heading strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 550;
+  line-height: 1.6;
+}
+.region-planning-heading small {
+  display: block;
+  margin-top: 2px;
+  color: #95a3b6;
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.region-control-grid {
+  display: grid;
+  gap: 10px;
+}
+.app-form .region-control-card {
+  padding: 15px;
+  border: 1px solid #e1e9f4;
+  border-radius: 10px;
+  background: #fafcff;
+}
+.app-form .region-control-card legend {
+  width: auto;
+  margin: 0 0 4px;
+  padding: 0 6px;
+  color: #2f5fba;
+  font-size: 11px;
+}
+.region-parameter {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0;
+}
+.region-parameter + .region-parameter {
+  border-top: 1px solid #edf2f8;
+}
+.region-parameter > span {
+  color: #788ba4;
+  font-size: 9px;
+  font-weight: 550;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.choice-pills.compact {
+  gap: 6px;
+}
+.choice-pills.compact .choice-pill > span {
+  min-height: 36px;
+  padding: 8px 11px;
+}
 .check-line {
   display: flex;
   gap: 10px;
@@ -1724,6 +1800,12 @@
   }
   .photo-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .choice-pills.compact .choice-pill > span {
+    min-height: 48px;
+  }
+  .app-form .region-control-card {
+    padding: 13px;
   }
   .catalog-grid,
   .setup-grid {
