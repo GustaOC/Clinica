@@ -3,10 +3,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Vercel's commit SHA gives every release a cache-busting asset identity.
   // This prevents an immutable CSS chunk from a previous design being reused.
-  deploymentId:
-    process.env.VERCEL_GIT_COMMIT_SHA ||
-    process.env.NEXT_DEPLOYMENT_ID ||
-    undefined,
+  // Custom IDs on Vercel are limited to 32 characters.
+  deploymentId: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 32),
   poweredByHeader: false,
   images: { formats: ['image/webp'] },
   async headers() {
