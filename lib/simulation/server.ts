@@ -11,7 +11,7 @@ export function configuration() {
       process.env.SUPABASE_ANON_KEY ||
       '',
     gemini: Boolean(process.env.GEMINI_API_KEY),
-    model: process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image',
+    model: process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image',
   };
 }
 export function database() {

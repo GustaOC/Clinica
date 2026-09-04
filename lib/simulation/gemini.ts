@@ -23,7 +23,7 @@ export async function editWithGemini(
           'Content-Type': 'application/json',
           'x-goog-api-key': apiKey,
         },
-        signal: AbortSignal.timeout(180_000),
+        signal: AbortSignal.timeout(240_000),
         body: JSON.stringify({
           contents: [
             {
@@ -39,7 +39,12 @@ export async function editWithGemini(
               ],
             },
           ],
-          generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
+          generationConfig: {
+            candidateCount: 1,
+            responseModalities: ['IMAGE'],
+            thinkingConfig: { thinkingLevel: 'HIGH' },
+            imageConfig: { imageSize: '2K' },
+          },
         }),
       },
     );
@@ -54,16 +59,28 @@ export async function editWithGemini(
       'Limite de uso do Gemini atingido. Aguarde antes de tentar novamente.',
       429,
     );
+  if (result.status === 401 || result.status === 403)
+    throw new SimulationError(
+      'A conta Gemini não autorizou a geração. Confira a chave, o faturamento e o acesso ao modelo Pro Image.',
+      503,
+    );
+  if (result.status === 400 || result.status === 404)
+    throw new SimulationError(
+      'O modelo Gemini Pro Image não está disponível para esta conta ou configuração.',
+      503,
+    );
   if (!result.ok)
     throw new SimulationError(
-      'O Gemini recusou a geração. Confira a chave, o modelo e a disponibilidade da conta.',
+      'O serviço de imagem do Gemini está temporariamente indisponível. Tente novamente mais tarde.',
       502,
     );
   const body = await result.json();
   const parts = body.candidates?.[0]?.content?.parts;
   if (!Array.isArray(parts))
     throw new SimulationError(
-      'O Gemini não retornou uma imagem para esta foto.',
+      body.candidates?.[0]?.finishReason === 'SAFETY'
+        ? 'O Gemini não gerou a imagem devido aos filtros de segurança.'
+        : 'O Gemini não retornou uma imagem para esta foto.',
       422,
     );
   const output = parts.find(

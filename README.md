@@ -43,7 +43,7 @@ Não use nem configure a chave `service_role`: todas as consultas e arquivos pas
 
 1. Crie a chave de servidor no Google AI Studio e confirme que a conta tem acesso a um modelo compatível com geração/edição de imagem.
 2. Configure `GEMINI_API_KEY` somente no servidor.
-3. O padrão do projeto é `gemini-3.1-flash-image`. Se a sua conta exigir outro modelo compatível, defina `GEMINI_IMAGE_MODEL` com o identificador exato.
+3. O padrão do projeto é `gemini-3-pro-image` (Nano Banana Pro), escolhido para edição profissional, instruções complexas e maior fidelidade. A geração solicita raciocínio alto, saída exclusivamente em imagem e resolução 2K. Se a sua conta exigir outro modelo compatível, defina `GEMINI_IMAGE_MODEL` com o identificador exato.
 
 Cada foto consome uma solicitação independente. O sistema não refaz automaticamente chamadas recusadas ou limitadas, para evitar cobrança duplicada. Uma tentativa manual é sempre explícita.
 

@@ -65,11 +65,12 @@ test('planning accepts only catalog-compatible choices', () => {
 
 test('prompt limits the edit and does not treat quantity as predicted effect', () => {
   const prompt = simulationPrompt(buildPlan(input, procedure, product));
-  assert.match(prompt, /Preserve identidade/);
+  assert.match(prompt, /preserv.*identidade/i);
   assert.match(prompt, /ajustes_por_regiao/);
   assert.match(prompt, /intensidade_visual|Intensidade visual/);
-  assert.match(prompt, /não infira correspondência entre dose e aparência/i);
-  assert.match(prompt, /não representa promessa de resultado/i);
+  assert.match(prompt, /não converta quantidade diretamente/i);
+  assert.match(prompt, /não constituem diagnóstico, prescrição ou promessa/i);
+  assert.match(prompt, /parâmetros estruturados.*prioridade/i);
 });
 
 test('every selected region requires all of its structured parameters', () => {
@@ -128,6 +129,9 @@ test('Gemini request sends one photo server-side and returns its image', async (
       assert.equal(options.headers['x-goog-api-key'], 'test-key');
       const body = JSON.parse(options.body);
       assert.equal(body.contents[0].parts.length, 2);
+      assert.deepEqual(body.generationConfig.responseModalities, ['IMAGE']);
+      assert.equal(body.generationConfig.thinkingConfig.thinkingLevel, 'HIGH');
+      assert.equal(body.generationConfig.imageConfig.imageSize, '2K');
       assert.equal(
         body.contents[0].parts[1].inlineData.data,
         Buffer.from('original-image').toString('base64'),
