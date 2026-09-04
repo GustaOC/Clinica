@@ -1,82 +1,97 @@
-# Lumina — site institucional
+# Lumina — sistema de simulação estética
 
-Next.js App Router + React + TypeScript, preparado para Vercel. Design Clean Health em azul-marinho `#1A365D`, azul `#2B6CB0`, branco e cinza-gelo. Fontes Inter e Lora hospedadas localmente, sem requisições ao Google Fonts.
+Sistema web privado em Next.js para a profissional criar um planejamento e gerar uma simulação por IA para cada fotografia enviada. Não há procedimentos, produtos, profissionais ou fotografias demonstrativos: o catálogo começa vazio e recebe somente dados reais da clínica.
 
-## Executar
+## O que já está implementado
 
-Use Node.js 24 e npm:
+- envio de múltiplas fotos JPG, PNG ou WebP, com normalização no navegador e no servidor;
+- planejamento guiado por procedimento, produto, regiões, intensidade visual e perguntas próprias do catálogo;
+- uma chamada Gemini independente por foto, fila pausável e nova tentativa individual;
+- comparação antes/depois e exportação com a marca “SIMULAÇÃO IA · RESULTADO ILUSTRATIVO” gravada na imagem;
+- histórico por conta, plano imutável e armazenamento privado no Supabase;
+- login apenas para usuários previamente habilitados, papéis `admin` e `doctor` e políticas RLS;
+- nenhuma chave de Supabase ou Gemini é enviada ao navegador.
+
+A simulação é uma visualização aproximada, não um diagnóstico, prescrição ou promessa de resultado. Os avisos jurídicos em `/privacidade` e `/termos` são provisórios e precisam de revisão antes do uso com dados reais.
+
+## Executar localmente
+
+Requer Node.js 24 e npm:
 
 ```sh
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Validação e produção:
+Sem as variáveis, a interface abre normalmente em estado de configuração e não aceita login, upload remoto ou geração.
+
+## 1. Criar e preparar o Supabase
+
+1. Crie um projeto no Supabase.
+2. Abra o SQL Editor e execute todo o arquivo `supabase/migrations/202609030001_aesthetic_simulations.sql` uma única vez.
+3. Em Authentication > Users, crie a conta da administradora.
+4. Copie o UUID dessa conta e execute no SQL Editor, substituindo apenas o UUID:
+
+```sql
+insert into public.aesthetic_members (user_id, role)
+values ('UUID_DA_CONTA', 'admin');
+```
+
+Para outra profissional, use `doctor`. Uma conta de Authentication sem linha ativa em `aesthetic_members` não acessa o sistema.
+
+5. Em Project Settings > API, copie a Project URL e a chave publishable. Se o projeto ainda mostrar somente a chave `anon`, ela também é aceita pelo código via `SUPABASE_ANON_KEY`, mas a variável recomendada é `SUPABASE_PUBLISHABLE_KEY`.
+
+Não use nem configure a chave `service_role`: todas as consultas e arquivos passam pela conta autenticada e pelas políticas RLS. O bucket `aesthetic-photos` é criado como privado pela migração.
+
+## 2. Configurar o Gemini
+
+1. Crie a chave de servidor no Google AI Studio e confirme que a conta tem acesso a um modelo compatível com geração/edição de imagem.
+2. Configure `GEMINI_API_KEY` somente no servidor.
+3. O padrão do projeto é `gemini-3.1-flash-image`. Se a sua conta exigir outro modelo compatível, defina `GEMINI_IMAGE_MODEL` com o identificador exato.
+
+Cada foto consome uma solicitação independente. O sistema não refaz automaticamente chamadas recusadas ou limitadas, para evitar cobrança duplicada. Uma tentativa manual é sempre explícita.
+
+## 3. Configurar na Vercel
+
+Use:
+
+- Application Preset: **Next.js**;
+- Root Directory: `./`;
+- Build Command: `npm run build`;
+- Output Directory: automático (deixe vazio);
+- Node.js: **24.x**.
+
+Cadastre `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `GEMINI_API_KEY` e, somente se necessário, `GEMINI_IMAGE_MODEL` em Settings > Environment Variables. Aplique ao ambiente Production e faça um novo deploy.
+
+## Primeiro acesso
+
+1. Abra o sistema, clique em **Entrar** e use a conta administradora criada no Supabase.
+2. Em **Catálogo**, cadastre um procedimento e suas regiões/perguntas.
+3. Cadastre os produtos vinculados a esse procedimento.
+4. Volte a **Simulações**, selecione as fotos, faça o planejamento e confirme que possui autorização para enviá-las ao serviço de IA.
+
+## Verificação do projeto
 
 ```sh
 npm test
 npm run typecheck
 npm run lint
 npm run build
-npm start
 ```
 
-### Validação desta entrega
-
-Os 7 testes automatizados de contatos e bloqueio da API passaram. A verificação de sintaxe dos arquivos e `git diff --check` também passaram.
-
-**A compilação de produção foi validada em 03/09/2026.** Após concluir a instalação, foram corrigidos os imports das fontes para as entradas padrão de `@fontsource-variable/inter` e `@fontsource-variable/lora`: esses pacotes não contêm `latin.css`. O comando `npm run build` passou, incluindo TypeScript e geração das páginas. A validação local usou Node.js 26.7.0; a configuração de destino na Vercel continua Node.js 24.x. Não houve teste de navegador ou medição de performance.
-
-Para reproduzir, execute a sequência acima com Node.js 24. O lint completo também encontrou avisos/erros preexistentes em componentes genéricos de `components/ui` e `hooks/use-mobile.ts`, fora do redesign; não foram mascarados nem removidos.
-
-Para conferir as respostas HTTP após subir `npm start`, execute em outro terminal:
+Com o servidor local em execução, o smoke test pode ser reproduzido com:
 
 ```sh
 node tests/http-smoke.mjs
 ```
 
-Esse teste passou contra o servidor de produção local: as quatro páginas públicas retornaram HTTP 200, e GET/POST da API clínica continuaram retornando HTTP 503 sem acesso a prontuários.
+Os testes locais usam somente fixtures sintéticas e respostas Gemini simuladas; não enviam imagens nem consomem cota. A integração ao vivo só pode ser validada após a criação das contas e configuração das chaves.
 
-## Publicar na Vercel
+## Privacidade e operação
 
-1. Envie este projeto para um repositório seu e importe-o na Vercel.
-2. Selecione o preset **Next.js**, raiz do projeto `.`, Node.js **24.x**.
-3. Use `npm run build` como comando de build. Mantenha o diretório de saída automático do Next.js; não use `dist`.
-4. Preencha as variáveis da `.env.example` nas configurações da Vercel. Nenhuma chave OpenAI, cookie ChatGPT, binding Cloudflare ou conta Sites é necessária.
-5. Configure `SITE_URL` com o domínio oficial (incluindo `https://`). Na ausência dele, o projeto usa `VERCEL_PROJECT_PRODUCTION_URL` quando fornecido pela Vercel. Sem origem conhecida, omite imagens OG absolutas.
-6. Refaça o deploy após atualizar variáveis ou conteúdo: o site institucional é pré-renderizado no build.
-
-O deploy anterior no domínio `chatgpt.site` **não é atualizado, removido ou migrado automaticamente** por esta alteração. Esta entrega prepara o código para a Vercel; não publica na sua conta.
-
-## Conteúdo oficial — sem dados fictícios
-
-Os dados públicos ficam em `content/clinic.ts` e nas variáveis de ambiente. Por solicitação do proprietário, especialidades, profissionais, CRM, RQE, fotos, convênios, endereço, telefone, horários, razão social, CNPJ e RT não recebem valores inventados.
-
-- Enquanto faltarem contatos válidos, agendamento abre um aviso explicando a indisponibilidade. Não há envio, armazenamento ou confirmação de consulta fictícia.
-- Com `CLINIC_WHATSAPP` válido, o botão abre uma mensagem genérica para a clínica; confirmação e disponibilidade dependem da equipe. Telefone e e-mail oficiais também podem ser usados.
-- Não se coleta nome, CPF, sintomas, fotos ou qualquer outro dado de paciente no site público.
-- Fotos reais/autorizadas devem ser colocadas em `public/images/`. Preencha os campos `photo` com caminho `/images/...`, texto alternativo e dimensões reais. Prefira arquivos WebP. Não use fotos de banco ou geradas como se fossem da clínica.
-- Em `professionals`, só publique nomes e títulos com CRM/UF, RQE quando aplicável e currículo verificados. Os cartões sem cadastro são espaços reservados, não profissionais fictícios.
-- Cadastre somente convênios confirmados. Não há logos ou contratos presumidos.
-- As páginas de privacidade e termos são **avisos provisórios**, não textos jurídicos aprovados. Exigem revisão da clínica/jurídico antes do lançamento.
-- A indexação está desligada (`robots: noindex, nofollow` no layout) enquanto o conteúdo oficial estiver pendente. Só habilite depois da validação.
-
-## Segurança e migração da área clínica
-
-A tela pública deixou de exigir login do ChatGPT. Foram removidos o runtime Vinext, plugins Sites/Cloudflare, configuração de hospedagem Sites, helper de autenticação e acesso D1 do runtime.
-
-Isso **não** transforma o sistema de prontuários em um serviço público. O protótipo anterior foi preservado em `legacy/clinic-app.tsx`, fora das rotas e da compilação de produção. Contém dados demonstrativos e ações incompletas; não deve ser usado para atendimento real.
-
-O endpoint `/api/patients` retorna **503, sem leitura ou gravação**, inclusive para requisições que tragam os antigos cabeçalhos de identidade. Ele não processa o corpo da requisição. A área `/portal` explica que o acesso clínico ainda não foi configurado e não apresenta prontuários.
-
-`db/schema.ts` e `drizzle/` foram preservados como referência de modelagem. As tabelas e os arquivos existentes na hospedagem anterior não são migrados, exportados nem apagados. Antes de reativar o painel, é necessário escolher e implementar autenticação própria, autorização por perfil, novo banco e armazenamento privado compatíveis com a Vercel, migração validada e revisão de segurança. A integração Gemini não fazia parte de um serviço real implementado e continua não conectada.
-
-## Performance e acessibilidade
-
-- Página pré-renderizada; ilhas client-side somente para menu, agendamento, currículos e perguntas frequentes.
-- Fontes locais com `font-display: swap`.
-- `next/image`: WebP, tamanhos responsivos, dimensões reservadas, preload apenas para a foto principal e lazy loading abaixo da primeira dobra.
-- Alvos de toque de pelo menos 48px, foco visível, navegação por teclado, diálogos acessíveis e redução de movimento.
-- O alvo de LCP < 2,5s depende de fotos, dispositivos, conexão e hospedagem. Não é garantido pelo build; medir com PageSpeed Insights/Lighthouse na Vercel com o conteúdo real.
-
-Documentação oficial: [Next.js na Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs), [otimização de imagens](https://nextjs.org/docs/app/api-reference/components/image).
+- O navegador comprime a foto para até 2,5 MB; o servidor decodifica, remove metadados e grava JPEG no bucket privado.
+- Originais e resultados ficam sob o UUID da conta responsável. Outra conta habilitada não lê essas sessões ou arquivos.
+- Cookies de sessão são `HttpOnly`, `SameSite=Strict` e `Secure` em produção.
+- A migração limita cada conta a duas gerações simultâneas e usa uma reivindicação atômica por foto para impedir duplo clique/cobrança duplicada.
+- Defina com a assessoria da clínica prazos de retenção, descarte, base legal, consentimento/autorização, operadores e transferências antes de processar fotografias reais.

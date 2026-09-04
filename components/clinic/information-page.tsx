@@ -1,8 +1,5 @@
-import { ArrowLeft, Info } from 'lucide-react';
+import { ArrowLeft, Info, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { clinic } from '@/content/clinic';
-import { Header } from './header';
-import { Footer } from './footer';
 
 export function InformationPage({
   title,
@@ -12,25 +9,37 @@ export function InformationPage({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Header contact={clinic.contact} />
-      <main id="conteudo" className="information-page container">
+    <div className="system-information-shell">
+      <header className="information-header">
+        <Link
+          href="/"
+          className="app-brand"
+          aria-label="Lumina — sistema clínico"
+        >
+          <span>
+            <Sparkles size={24} />
+          </span>
+          <div>
+            lumina<small>CLINICAL WORKSPACE</small>
+          </div>
+        </Link>
+      </header>
+      <main id="conteudo" className="info-page">
         <Link className="back-link" href="/">
           <ArrowLeft size={16} aria-hidden="true" />
-          Voltar para a Lumina
+          Voltar ao sistema
         </Link>
-        <p className="eyebrow">INFORMAÇÕES INSTITUCIONAIS</p>
-        <h1 className="section-title">{title}</h1>
+        <p className="app-eyebrow">INFORMAÇÕES DO SISTEMA</p>
+        <h1>{title}</h1>
         <div className="honest-notice">
           <Info size={20} aria-hidden="true" />
           <p>
-            Esta página está em preparação. As informações oficiais dependem de
-            validação pela clínica.
+            Este texto é provisório e precisa de validação jurídica antes do uso
+            em produção com dados reais.
           </p>
         </div>
         <div className="information-copy">{children}</div>
       </main>
-      <Footer />
-    </>
+    </div>
   );
 }

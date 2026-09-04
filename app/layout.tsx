@@ -5,37 +5,27 @@ import './globals.css';
 import { siteOrigin } from '@/lib/contact';
 
 const description =
-  'Conheça a Lumina, suas áreas de atendimento, corpo clínico e estrutura. Encontre os canais oficiais para planejar sua consulta.';
+  'Sistema clínico Lumina: planejamento de procedimentos, catálogo e simulações visuais para revisão profissional.';
 const origin = siteOrigin(process.env);
-const socialImage = origin ? new URL('/og.png', origin).href : undefined;
 
 export const metadata: Metadata = {
   metadataBase: origin,
-  title: { default: 'Lumina | Clínica estética', template: '%s | Lumina' },
+  title: { default: 'Lumina | Simulações estéticas', template: '%s | Lumina' },
   description,
   icons: { icon: '/favicon.svg' },
   robots: { index: false, follow: false }, // Enable only after official content review.
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    title: 'Lumina | Clínica estética',
+    title: 'Lumina | Sistema clínico',
     description,
-    images: socialImage
-      ? [
-          {
-            url: socialImage,
-            width: 1731,
-            height: 909,
-            alt: 'Lumina — Cuidado que começa com você.',
-          },
-        ]
-      : [],
+    images: [],
   },
   twitter: {
-    card: socialImage ? 'summary_large_image' : 'summary',
-    title: 'Lumina | Clínica estética',
+    card: 'summary',
+    title: 'Lumina | Sistema clínico',
     description,
-    images: socialImage ? [socialImage] : [],
+    images: [],
   },
 };
 

@@ -26,24 +26,23 @@ export default function TermsPage() {
         ainda precisam ser fornecidos e revisados pela clínica. Este conteúdo é
         um aviso provisório, não um contrato ou termo jurídico aprovado.
       </p>
-      <h2>Finalidade institucional</h2>
+      <h2>Finalidade da ferramenta</h2>
       <p>
-        O site apresenta informações sobre a clínica e seus canais oficiais.
-        Campos marcados como pendentes não representam serviços, profissionais,
-        convênios ou credenciais confirmados.
+        A ferramenta apoia profissionais autorizadas na criação de simulações
+        visuais para comunicação do planejamento estético. Ela não diagnostica,
+        prescreve nem substitui avaliação, consentimento ou decisão clínica.
       </p>
-      <h2>Agendamento</h2>
+      <h2>Resultado ilustrativo</h2>
       <p>
-        O botão de contato não reserva uma data automaticamente. A
-        disponibilidade e a confirmação de consulta dependem da comunicação
-        direta com a equipe. Sem canais oficiais configurados, o site não envia
-        solicitações.
+        A imagem produzida por inteligência artificial é aproximada, pode conter
+        imprecisões e não constitui promessa de resultado. Toda simulação deve
+        ser revisada pela profissional antes de ser apresentada à paciente.
       </p>
-      <h2>Área clínica</h2>
+      <h2>Acesso e conteúdo</h2>
       <p>
-        O site público não oferece acesso a prontuários, fotografias clínicas,
-        exames ou simulações de tratamento. Não envie informações sensíveis por
-        este site.
+        O acesso é restrito às contas habilitadas pela administração. A
+        profissional confirma que possui autorização para enviar as fotografias
+        e é responsável pela adequação dos dados inseridos no planejamento.
       </p>
       <h2>Validação antes do lançamento</h2>
       <p>
