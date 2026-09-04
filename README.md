@@ -35,7 +35,7 @@ Sem as variáveis, a interface abre normalmente em estado de configuração e n�
 
 Para outra profissional, crie o usuário e adicione seu UUID com o papel `doctor`. Uma conta de Authentication sem linha ativa em `aesthetic_members` não acessa o sistema. O aplicativo utiliza apenas e-mail e senha e não habilita login pelo Google.
 
-5. Em Project Settings > API, copie a Project URL e a chave publishable. Se o projeto ainda mostrar somente a chave `anon`, ela também é aceita pelo código via `SUPABASE_ANON_KEY`, mas a variável recomendada é `SUPABASE_PUBLISHABLE_KEY`.
+5. Em Project Settings > API, copie a Project URL e a chave publishable. Se o projeto ainda mostrar somente a chave `anon`, ela também é aceita pelo código via `SUPABASE_ANON_KEY`. Instalações já configuradas com `NEXT_SUPABASE_URL` e `NEXT_SUPABASE_ANON_KEY` também são compatíveis, mas os nomes recomendados são `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`.
 
 Não use nem configure a chave `service_role`: todas as consultas e arquivos passam pela conta autenticada e pelas políticas RLS. O bucket `aesthetic-photos` é criado como privado pela migração.
 
@@ -57,7 +57,7 @@ Use:
 - Output Directory: automático (deixe vazio);
 - Node.js: **24.x**.
 
-Cadastre `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `GEMINI_API_KEY` e, somente se necessário, `GEMINI_IMAGE_MODEL` em Settings > Environment Variables. Aplique ao ambiente Production e faça um novo deploy.
+Cadastre `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `GEMINI_API_KEY` e, somente se necessário, `GEMINI_IMAGE_MODEL` em Settings > Environment Variables. Aplique ao ambiente Production e faça um novo deploy. O sistema não usa `SUPABASE_SERVICE_ROLE_KEY`; remova essa variável da Vercel para reduzir o impacto de qualquer vazamento futuro.
 
 ## Primeiro acesso
 

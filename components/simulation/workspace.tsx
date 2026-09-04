@@ -1534,7 +1534,9 @@ function SettingsView({
             </li>
             <li>
               Na Vercel, configure <code>SUPABASE_URL</code> e{' '}
-              <code>SUPABASE_PUBLISHABLE_KEY</code>.
+              <code>SUPABASE_PUBLISHABLE_KEY</code>. Os nomes{' '}
+              <code>NEXT_SUPABASE_URL</code> e{' '}
+              <code>NEXT_SUPABASE_ANON_KEY</code> também são aceitos.
             </li>
           </ol>
           <Button

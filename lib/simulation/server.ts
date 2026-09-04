@@ -5,10 +5,11 @@ import { SimulationError } from './types';
 export const BUCKET = 'aesthetic-photos';
 export function configuration() {
   return {
-    url: process.env.SUPABASE_URL || '',
+    url: process.env.SUPABASE_URL || process.env.NEXT_SUPABASE_URL || '',
     key:
       process.env.SUPABASE_PUBLISHABLE_KEY ||
       process.env.SUPABASE_ANON_KEY ||
+      process.env.NEXT_SUPABASE_ANON_KEY ||
       '',
     gemini: Boolean(process.env.GEMINI_API_KEY),
     model: process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image',
