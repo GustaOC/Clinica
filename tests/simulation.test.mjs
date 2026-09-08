@@ -66,11 +66,17 @@ test('planning accepts only catalog-compatible choices', () => {
 test('prompt limits the edit and does not treat quantity as predicted effect', () => {
   const prompt = simulationPrompt(buildPlan(input, procedure, product));
   assert.match(prompt, /preserv.*identidade/i);
-  assert.match(prompt, /ajustes_por_regiao/);
+  assert.match(prompt, /regioes_selecionadas/);
   assert.match(prompt, /intensidade_visual|Intensidade visual/);
   assert.match(prompt, /não converta quantidade diretamente/i);
   assert.match(prompt, /não constituem diagnóstico, prescrição ou promessa/i);
-  assert.match(prompt, /parâmetros estruturados.*prioridade/i);
+  assert.match(prompt, /ajustes estruturados.*autoridade principal/i);
+  assert.match(prompt, /Procedimento de teste/);
+  assert.match(prompt, /Produto de teste/);
+  assert.match(prompt, /Região A/);
+  assert.match(prompt, /Escolha técnica/);
+  assert.match(prompt, /Preservar características não selecionadas/);
+  assert.match(prompt, /<planejamento_do_sistema>/);
 });
 
 test('every selected region requires all of its structured parameters', () => {
