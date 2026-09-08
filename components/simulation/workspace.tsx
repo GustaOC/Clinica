@@ -26,7 +26,6 @@ import {
   Pause,
   Plus,
   RotateCcw,
-  Settings2,
   SlidersHorizontal,
   Sparkles,
   WandSparkles,
@@ -51,7 +50,7 @@ import {
 import { ApiError, api, jsonRequest, preparePhoto } from './client';
 import { Catalog } from './catalog';
 
-type View = 'simulation' | 'history' | 'catalog' | 'settings';
+type View = 'simulation' | 'history' | 'catalog';
 type Photo = {
   id: string;
   label: string;
@@ -491,7 +490,6 @@ export function SimulationWorkspace() {
               { id: 'simulation', label: 'Simulações', icon: WandSparkles },
               { id: 'history', label: 'Histórico', icon: History },
               { id: 'catalog', label: 'Catálogo', icon: Package },
-              { id: 'settings', label: 'Configuração', icon: Settings2 },
             ] as const
           ).map(({ id, label, icon: Icon }) => (
             <button
@@ -550,7 +548,6 @@ export function SimulationWorkspace() {
                   simulation: 'Simulações',
                   history: 'Histórico',
                   catalog: 'Catálogo',
-                  settings: 'Configuração',
                 }[view]
               }
             </strong>
@@ -566,13 +563,6 @@ export function SimulationWorkspace() {
                   ? 'Sessão conectada'
                   : 'Acesso restrito'}
             </span>
-            <button
-              className="icon-button"
-              aria-label="Ajuda e configuração"
-              onClick={() => setView('settings')}
-            >
-              <CircleHelp size={20} />
-            </button>
             <button
               className="topbar-account"
               disabled={busy}
@@ -1466,12 +1456,6 @@ export function SimulationWorkspace() {
               )}
             </section>
           )}
-          {view === 'settings' && (
-            <SettingsView
-              service={service}
-              onLogin={() => setLoginOpen(true)}
-            />
-          )}
         </main>
         <footer className="workspace-footer">
           <span>Planejamento visual, com revisão profissional.</span>
@@ -1508,16 +1492,7 @@ export function SimulationWorkspace() {
           </DialogDescription>
           {!service.configured ? (
             <div className="inline-empty">
-              <p>O acesso ainda não foi configurado.</p>
-              <Button
-                className="app-button secondary"
-                onClick={() => {
-                  setLoginOpen(false);
-                  setView('settings');
-                }}
-              >
-                Ver configuração
-              </Button>
+              <p>O acesso está temporariamente indisponível.</p>
             </div>
           ) : (
             <form className="app-form" onSubmit={login}>
@@ -1563,107 +1538,5 @@ export function SimulationWorkspace() {
         </DialogContent>
       </Dialog>
     </div>
-  );
-}
-
-function SettingsView({
-  service,
-  onLogin,
-}: {
-  service: WorkspaceStatus;
-  onLogin: () => void;
-}) {
-  return (
-    <section>
-      <div className="workspace-heading">
-        <div>
-          <p className="app-eyebrow">PREPARAÇÃO DO SISTEMA</p>
-          <h1>Conexões e acesso</h1>
-          <p>
-            Configure os serviços para habilitar o catálogo, o histórico e a
-            geração de imagens.
-          </p>
-        </div>
-      </div>
-      <div className="setup-grid">
-        <article className="workspace-card setup-card">
-          <span className="catalog-icon">
-            <Package size={24} />
-          </span>
-          <span className={`setup-status ${service.configured ? 'ok' : ''}`}>
-            {service.configured ? 'Variáveis configuradas' : 'A configurar'}
-          </span>
-          <h2>Supabase</h2>
-          <p>
-            Contas das profissionais, catálogo e armazenamento privado das fotos
-            e simulações.
-          </p>
-          <p className="app-hint">
-            O acesso é somente por e-mail e senha. Não há login pelo Google.
-          </p>
-          {service.project && (
-            <p className="app-hint">
-              Projeto conectado: <code>{service.project}</code>
-            </p>
-          )}
-          <ol>
-            <li>Crie o projeto Supabase.</li>
-            <li>Execute a migração de simulações incluída no projeto.</li>
-            <li>
-              Crie a conta da profissional e habilite-a em{' '}
-              <code>aesthetic_members</code>.
-            </li>
-            <li>
-              Na Vercel, configure <code>SUPABASE_URL</code> e{' '}
-              <code>SUPABASE_PUBLISHABLE_KEY</code>. Os nomes{' '}
-              <code>NEXT_SUPABASE_URL</code> e{' '}
-              <code>NEXT_SUPABASE_ANON_KEY</code> também são aceitos.
-            </li>
-          </ol>
-          <Button
-            className="app-button secondary"
-            disabled={!service.configured || Boolean(service.member)}
-            onClick={onLogin}
-          >
-            <LogIn size={16} />
-            {service.member ? 'Conta conectada' : 'Testar acesso'}
-          </Button>
-        </article>
-        <article className="workspace-card setup-card">
-          <span className="catalog-icon">
-            <Sparkles size={24} />
-          </span>
-          <span className={`setup-status ${service.openai ? 'ok' : ''}`}>
-            {service.openai ? 'Chave configurada' : 'A configurar'}
-          </span>
-          <h2>OpenAI</h2>
-          <p>
-            Edita cada fotografia a partir do planejamento selecionado pela
-            médica.
-          </p>
-          <ol>
-            <li>Crie uma chave secreta no projeto da plataforma OpenAI.</li>
-            <li>Habilite o acesso ao modelo de geração de imagens.</li>
-            <li>
-              Na Vercel, configure <code>OPENAI_API_KEY</code>. O modelo fica em{' '}
-              <code>OPENAI_IMAGE_MODEL</code>.
-            </li>
-            <li>Refaça o deploy após salvar as variáveis.</li>
-          </ol>
-          <p className="app-hint">
-            A chave é usada somente pelo servidor. A geração utiliza a cota da
-            sua conta.
-          </p>
-        </article>
-      </div>
-      <div className="setup-bottom">
-        <CircleHelp size={20} />
-        <p>
-          Depois de conectar os serviços, entre como administradora e cadastre
-          os procedimentos e produtos em <strong>Catálogo</strong>. As
-          fotografias enviadas só são acessíveis pela conta responsável.
-        </p>
-      </div>
-    </section>
   );
 }
