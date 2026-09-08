@@ -6,7 +6,7 @@ import {
   jsonBody,
   response,
   sameOrigin,
-  saveSession,
+  sessionResponse,
 } from '@/lib/simulation/server';
 import { record, SimulationError, textField } from '@/lib/simulation/types';
 
@@ -93,13 +93,15 @@ export async function POST(request: Request) {
         'A conta não está habilitada para acessar o sistema clínico.',
         403,
       );
-    await saveSession(data.session);
-    return response({
-      configured: true,
-      gemini: configuration().gemini,
-      project: projectReference(configuration().url),
-      member: { id: data.user.id, email: data.user.email, role: member.role },
-    });
+    return sessionResponse(
+      {
+        configured: true,
+        gemini: configuration().gemini,
+        project: projectReference(configuration().url),
+        member: { id: data.user.id, email: data.user.email, role: member.role },
+      },
+      data.session,
+    );
   } catch (error) {
     return failure(error);
   }
@@ -113,8 +115,7 @@ export async function DELETE(request: Request) {
     } catch {
       /* Expired sessions can still be cleared. */
     }
-    await saveSession(null);
-    return response({ ok: true });
+    return sessionResponse({ ok: true }, null);
   } catch (error) {
     return failure(error);
   }

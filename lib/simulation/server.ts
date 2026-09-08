@@ -1,9 +1,17 @@
 import { createClient, type Session } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { SimulationError } from './types';
 
 export const BUCKET = 'aesthetic-photos';
 const PERSISTENT_SESSION_SECONDS = 60 * 60 * 24 * 400;
+const sessionCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
+  priority: 'high' as const,
+};
 export function configuration() {
   return {
     url: process.env.SUPABASE_URL || process.env.NEXT_SUPABASE_URL || '',
@@ -33,20 +41,28 @@ export function database() {
 }
 export async function saveSession(session: Session | null) {
   const jar = await cookies();
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' as const,
-    path: '/',
-  };
   jar.set('clinic-access', session?.access_token || '', {
-    ...options,
+    ...sessionCookieOptions,
     maxAge: session ? session.expires_in : 0,
   });
   jar.set('clinic-refresh', session?.refresh_token || '', {
-    ...options,
+    ...sessionCookieOptions,
     maxAge: session ? PERSISTENT_SESSION_SECONDS : 0,
   });
+}
+export function sessionResponse(data: unknown, session: Session | null) {
+  const result = NextResponse.json(data, {
+    headers: { 'Cache-Control': 'no-store' },
+  });
+  result.cookies.set('clinic-access', session?.access_token || '', {
+    ...sessionCookieOptions,
+    maxAge: session ? session.expires_in : 0,
+  });
+  result.cookies.set('clinic-refresh', session?.refresh_token || '', {
+    ...sessionCookieOptions,
+    maxAge: session ? PERSISTENT_SESSION_SECONDS : 0,
+  });
+  return result;
 }
 export async function authenticated() {
   const db = database(),
