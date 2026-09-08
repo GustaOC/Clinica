@@ -6,11 +6,11 @@ Sistema web privado em Next.js para a profissional criar um planejamento e gerar
 
 - envio de múltiplas fotos JPG, PNG ou WebP, com normalização no navegador e no servidor;
 - planejamento guiado por procedimento, produto, regiões e parâmetros visuais específicos, além das perguntas próprias do catálogo;
-- uma chamada Gemini independente por foto, fila pausável e nova tentativa individual;
+- uma chamada OpenAI independente por foto, fila pausável e nova tentativa individual;
 - comparação antes/depois e exportação com a marca “SIMULAÇÃO IA · RESULTADO ILUSTRATIVO” gravada na imagem;
 - histórico por conta, plano imutável e armazenamento privado no Supabase;
 - login apenas para usuários previamente habilitados, papéis `admin` e `doctor` e políticas RLS;
-- nenhuma chave de Supabase ou Gemini é enviada ao navegador.
+- nenhuma chave de Supabase ou OpenAI é enviada ao navegador.
 
 A simulação é uma visualização aproximada, não um diagnóstico, prescrição ou promessa de resultado. Os avisos jurídicos em `/privacidade` e `/termos` são provisórios e precisam de revisão antes do uso com dados reais.
 
@@ -43,11 +43,11 @@ Para outra profissional, crie o usuário e adicione seu UUID com o papel `doctor
 
 Não use nem configure a chave `service_role`: todas as consultas e arquivos passam pela conta autenticada e pelas políticas RLS. O bucket `aesthetic-photos` é criado como privado pela migração.
 
-## 2. Configurar o Gemini
+## 2. Configurar a OpenAI
 
-1. Crie a chave de servidor no Google AI Studio e confirme que a conta tem acesso a um modelo compatível com geração/edição de imagem.
-2. Configure `GEMINI_API_KEY` somente no servidor.
-3. O padrão do projeto é `gemini-3-pro-image` (Nano Banana Pro), escolhido para edição profissional, instruções complexas e maior fidelidade. A geração solicita raciocínio alto, saída exclusivamente em imagem e resolução 2K. Se a sua conta exigir outro modelo compatível, defina `GEMINI_IMAGE_MODEL` com o identificador exato.
+1. Crie uma chave secreta na plataforma da OpenAI e confirme que o projeto possui faturamento e acesso à geração de imagens.
+2. Configure `OPENAI_API_KEY` somente no servidor.
+3. O padrão é `gpt-image-2`, modelo atual de maior qualidade da OpenAI para geração e edição. Se precisar fixar outro modelo compatível, defina `OPENAI_IMAGE_MODEL` com o identificador exato.
 
 Cada foto consome uma solicitação independente. O sistema não refaz automaticamente chamadas recusadas ou limitadas, para evitar cobrança duplicada. Uma tentativa manual é sempre explícita.
 
@@ -61,7 +61,7 @@ Use:
 - Output Directory: automático (deixe vazio);
 - Node.js: **24.x**.
 
-Cadastre `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `GEMINI_API_KEY` e, somente se necessário, `GEMINI_IMAGE_MODEL` em Settings > Environment Variables. Aplique ao ambiente Production e faça um novo deploy. O sistema não usa `SUPABASE_SERVICE_ROLE_KEY`; remova essa variável da Vercel para reduzir o impacto de qualquer vazamento futuro.
+Cadastre `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `OPENAI_API_KEY` e, somente se necessário, `OPENAI_IMAGE_MODEL` em Settings > Environment Variables. Aplique ao ambiente Production e faça um novo deploy. O sistema não usa `SUPABASE_SERVICE_ROLE_KEY`; remova essa variável da Vercel para reduzir o impacto de qualquer vazamento futuro.
 
 ## Primeiro acesso
 
@@ -85,7 +85,7 @@ Com o servidor local em execução, o smoke test pode ser reproduzido com:
 node tests/http-smoke.mjs
 ```
 
-Os testes locais usam somente fixtures sintéticas e respostas Gemini simuladas; não enviam imagens nem consomem cota. A integração ao vivo só pode ser validada após a criação das contas e configuração das chaves.
+Os testes locais usam somente fixtures sintéticas e respostas OpenAI simuladas; não enviam imagens nem consomem cota. A integração ao vivo só pode ser validada após a criação das contas e configuração das chaves.
 
 ## Privacidade e operação
 

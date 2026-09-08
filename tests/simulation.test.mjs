@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { editWithGemini } from '../lib/simulation/gemini.ts';
+import { editWithOpenAI } from '../lib/simulation/openai.ts';
 import {
   buildPlan,
   simulationPrompt,
@@ -118,45 +118,30 @@ test('every selected region requires all of its structured parameters', () => {
   });
 });
 
-test('Gemini request sends one photo server-side and returns its image', async () => {
+test('OpenAI request sends one photo server-side and returns its image', async () => {
   let calls = 0;
   const output = Buffer.from('generated-image');
-  const result = await editWithGemini(
+  const result = await editWithOpenAI(
     Buffer.from('original-image'),
     buildPlan(input, procedure, product),
     'test-key',
     'test-image-model',
     async (url, options) => {
       calls += 1;
-      assert.equal(
-        url,
-        'https://generativelanguage.googleapis.com/v1beta/models/test-image-model:generateContent',
-      );
-      assert.equal(options.headers['x-goog-api-key'], 'test-key');
-      const body = JSON.parse(options.body);
-      assert.equal(body.contents[0].parts.length, 2);
-      assert.deepEqual(body.generationConfig.responseModalities, ['IMAGE']);
-      assert.equal(body.generationConfig.thinkingConfig.thinkingLevel, 'HIGH');
-      assert.equal(body.generationConfig.imageConfig.imageSize, '2K');
-      assert.equal(
-        body.contents[0].parts[1].inlineData.data,
-        Buffer.from('original-image').toString('base64'),
+      assert.equal(url, 'https://api.openai.com/v1/images/edits');
+      assert.equal(options.headers.Authorization, 'Bearer test-key');
+      assert.ok(options.body instanceof FormData);
+      assert.equal(options.body.get('model'), 'test-image-model');
+      assert.equal(options.body.get('quality'), 'high');
+      assert.match(options.body.get('prompt'), /Procedimento de teste/);
+      const sentImage = options.body.get('image[]');
+      assert.ok(sentImage instanceof Blob);
+      assert.deepEqual(
+        Buffer.from(await sentImage.arrayBuffer()),
+        Buffer.from('original-image'),
       );
       return Response.json({
-        candidates: [
-          {
-            content: {
-              parts: [
-                {
-                  inlineData: {
-                    mimeType: 'image/png',
-                    data: output.toString('base64'),
-                  },
-                },
-              ],
-            },
-          },
-        ],
+        data: [{ b64_json: output.toString('base64') }],
       });
     },
   );
@@ -165,10 +150,10 @@ test('Gemini request sends one photo server-side and returns its image', async (
   assert.equal(result.mime, 'image/png');
 });
 
-test('Gemini usage limit is not retried automatically', async () => {
+test('OpenAI usage limit is not retried automatically', async () => {
   let calls = 0;
   await assert.rejects(
-    editWithGemini(
+    editWithOpenAI(
       Buffer.from('original'),
       buildPlan(input, procedure, product),
       'test-key',
@@ -183,9 +168,9 @@ test('Gemini usage limit is not retried automatically', async () => {
   assert.equal(calls, 1);
 });
 
-test('Gemini response without an image fails closed', async () => {
+test('OpenAI response without an image fails closed', async () => {
   await assert.rejects(
-    editWithGemini(
+    editWithOpenAI(
       Buffer.from('original'),
       buildPlan(input, procedure, product),
       'test-key',

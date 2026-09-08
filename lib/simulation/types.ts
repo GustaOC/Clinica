@@ -51,7 +51,7 @@ export type SavedSession = {
 export type Member = { id: string; email: string; role: 'admin' | 'doctor' };
 export type WorkspaceStatus = {
   configured: boolean;
-  gemini: boolean;
+  openai: boolean;
   member: Member | null;
   project?: string;
   message?: string;

@@ -31,7 +31,7 @@ export default function PrivacyPage() {
       <p>
         O sistema prevê autenticação de profissionais, catálogo de procedimentos
         e produtos, planejamento e envio de fotografias para uma simulação
-        visual por inteligência artificial. Enquanto Supabase e Gemini não
+        visual por inteligência artificial. Enquanto Supabase e OpenAI não
         estiverem configurados, esses tratamentos permanecem desabilitados.
       </p>
       <h2>Fotografias e serviço de IA</h2>

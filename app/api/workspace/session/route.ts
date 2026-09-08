@@ -41,20 +41,20 @@ function loginFailure(code?: string): SimulationError {
 export async function GET() {
   const config = configuration();
   if (!config.url || !config.key)
-    return response({ configured: false, gemini: config.gemini, member: null });
+    return response({ configured: false, openai: config.openai, member: null });
   const project = projectReference(config.url);
   try {
     const { user, member } = await authenticated();
     return response({
       configured: true,
-      gemini: config.gemini,
+      openai: config.openai,
       project,
       member: { id: user.id, email: user.email, role: member.role },
     });
   } catch (error) {
     return response({
       configured: true,
-      gemini: config.gemini,
+      openai: config.openai,
       project,
       member: null,
       message:
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     return sessionResponse(
       {
         configured: true,
-        gemini: configuration().gemini,
+        openai: configuration().openai,
         project: projectReference(configuration().url),
         member: { id: data.user.id, email: data.user.email, role: member.role },
       },

@@ -40,7 +40,7 @@ const workspace = await fetch(`${origin}/api/workspace/session`);
 assert.equal(workspace.status, 200);
 assert.deepEqual(await workspace.json(), {
   configured: false,
-  gemini: false,
+  openai: false,
   member: null,
 });
 assert.equal(workspace.headers.get('cache-control'), 'no-store');

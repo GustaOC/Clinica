@@ -99,7 +99,7 @@ export function SimulationWorkspace() {
   const [view, setView] = useState<View>('simulation');
   const [service, setService] = useState<WorkspaceStatus>({
     configured: false,
-    gemini: false,
+    openai: false,
     member: null,
   });
   const [loading, setLoading] = useState(true),
@@ -355,7 +355,7 @@ export function SimulationWorkspace() {
       setLoginOpen(true);
       return;
     }
-    if (!service.gemini || !canPlan || !consent) {
+    if (!service.openai || !canPlan || !consent) {
       setNotice(
         'Complete o planejamento e confirme a autorização antes de gerar.',
       );
@@ -1333,7 +1333,7 @@ export function SimulationWorkspace() {
                           </span>
                         </label>
                       )}
-                      {!service.gemini && (planningStep >= 5 || session) && (
+                      {!service.openai && (planningStep >= 5 || session) && (
                         <p className="app-hint">
                           A geração será habilitada após a conexão do serviço de
                           imagens.
@@ -1359,7 +1359,7 @@ export function SimulationWorkspace() {
                             className="app-button full generate-button"
                             disabled={
                               !service.member ||
-                              !service.gemini ||
+                              !service.openai ||
                               !canPlan ||
                               !consent ||
                               complete === photos.length
@@ -1633,20 +1633,20 @@ function SettingsView({
           <span className="catalog-icon">
             <Sparkles size={24} />
           </span>
-          <span className={`setup-status ${service.gemini ? 'ok' : ''}`}>
-            {service.gemini ? 'Chave configurada' : 'A configurar'}
+          <span className={`setup-status ${service.openai ? 'ok' : ''}`}>
+            {service.openai ? 'Chave configurada' : 'A configurar'}
           </span>
-          <h2>Gemini</h2>
+          <h2>OpenAI</h2>
           <p>
             Edita cada fotografia a partir do planejamento selecionado pela
             médica.
           </p>
           <ol>
-            <li>Crie uma chave de API na sua conta Google AI Studio.</li>
+            <li>Crie uma chave secreta no projeto da plataforma OpenAI.</li>
             <li>Habilite o acesso ao modelo de geração de imagens.</li>
             <li>
-              Na Vercel, configure <code>GEMINI_API_KEY</code>. O modelo fica em{' '}
-              <code>GEMINI_IMAGE_MODEL</code>.
+              Na Vercel, configure <code>OPENAI_API_KEY</code>. O modelo fica em{' '}
+              <code>OPENAI_IMAGE_MODEL</code>.
             </li>
             <li>Refaça o deploy após salvar as variáveis.</li>
           </ol>

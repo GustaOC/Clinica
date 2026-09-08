@@ -20,8 +20,8 @@ export function configuration() {
       process.env.SUPABASE_ANON_KEY ||
       process.env.NEXT_SUPABASE_ANON_KEY ||
       '',
-    gemini: Boolean(process.env.GEMINI_API_KEY),
-    model: process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image',
+    openai: Boolean(process.env.OPENAI_API_KEY),
+    model: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2',
   };
 }
 export function database() {

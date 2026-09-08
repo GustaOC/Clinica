@@ -7,7 +7,7 @@ import {
   response,
   sameOrigin,
 } from '@/lib/simulation/server';
-import { editWithGemini } from '@/lib/simulation/gemini';
+import { editWithOpenAI } from '@/lib/simulation/openai';
 import { SimulationError, uuid, type Plan } from '@/lib/simulation/types';
 
 export const runtime = 'nodejs';
@@ -20,7 +20,7 @@ export async function POST(
     sameOrigin(request);
     const { db, user } = await authenticated(),
       id = uuid((await context.params).id);
-    const key = process.env.GEMINI_API_KEY;
+    const key = process.env.OPENAI_API_KEY;
     if (!key)
       throw new SimulationError(
         'A geração de imagens ainda não foi conectada.',
@@ -51,7 +51,7 @@ export async function POST(
         .download(claim.original_path);
       if (downloadError || !original)
         throw new SimulationError('Não foi possível ler a foto original.', 503);
-      const { image } = await editWithGemini(
+      const { image } = await editWithOpenAI(
         Buffer.from(await original.arrayBuffer()),
         session.plan as Plan,
         key,
