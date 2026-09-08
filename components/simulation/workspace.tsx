@@ -113,6 +113,7 @@ export function SimulationWorkspace() {
     [selectedId, setSelectedId] = useState('');
   const [procedureId, setProcedureId] = useState(''),
     [productId, setProductId] = useState(''),
+    [planningStep, setPlanningStep] = useState(1),
     [regions, setRegions] = useState<string[]>([]);
   const [regionOptions, setRegionOptions] = useState<
       Record<string, Record<string, string>>
@@ -143,6 +144,15 @@ export function SimulationWorkspace() {
     (p) => p.procedure_id === procedureId,
   );
   const complete = photos.filter((p) => p.status === 'completed').length;
+  const regionParametersComplete =
+    regions.length > 0 &&
+    regions.every((region) =>
+      controlsForRegion(region).every(
+        (control) =>
+          regionOptions[region]?.[control.id] &&
+          control.options.includes(regionOptions[region][control.id]),
+      ),
+    );
   const canPlan = Boolean(
     procedure &&
     regions.length &&
@@ -233,6 +243,7 @@ export function SimulationWorkspace() {
     setSession(null);
     setProcedureId('');
     setProductId('');
+    setPlanningStep(1);
     setRegions([]);
     setRegionOptions({});
     setAnswers({});
@@ -328,6 +339,7 @@ export function SimulationWorkspace() {
     setTitle(item.title);
     setProcedureId(item.plan.procedure.id);
     setProductId(item.plan.product?.id || '');
+    setPlanningStep(5);
     setRegions(item.plan.regions);
     setRegionOptions(item.plan.region_options || {});
     setAnswers(item.plan.answers);
@@ -996,29 +1008,28 @@ export function SimulationWorkspace() {
                           <b>1</b>Qual procedimento?
                         </legend>
                         {procedures.length || procedure ? (
-                          <div className="choice-pills">
+                          <select
+                            aria-label="Procedimento"
+                            value={procedureId}
+                            onChange={(event) => {
+                              setProcedureId(event.target.value);
+                              setProductId('');
+                              setRegions([]);
+                              setRegionOptions({});
+                              setAnswers({});
+                              setPlanningStep(event.target.value ? 2 : 1);
+                            }}
+                          >
+                            <option value="">Selecione um procedimento</option>
                             {(session
                               ? [session.plan.procedure]
                               : procedures
                             ).map((p) => (
-                              <label key={p.id} className="choice-pill">
-                                <input
-                                  type="radio"
-                                  name="procedure"
-                                  value={p.id}
-                                  checked={procedureId === p.id}
-                                  onChange={() => {
-                                    setProcedureId(p.id);
-                                    setProductId('');
-                                    setRegions([]);
-                                    setRegionOptions({});
-                                    setAnswers({});
-                                  }}
-                                />
-                                <span>{p.name}</span>
-                              </label>
+                              <option key={p.id} value={p.id}>
+                                {p.name}
+                              </option>
                             ))}
-                          </div>
+                          </select>
                         ) : (
                           <div className="inline-empty">
                             <p>
@@ -1042,7 +1053,7 @@ export function SimulationWorkspace() {
                           </div>
                         )}
                       </fieldset>
-                      {procedure && (
+                      {procedure && planningStep >= 2 && (
                         <>
                           <fieldset disabled={frozen}>
                             <legend>
@@ -1061,7 +1072,9 @@ export function SimulationWorkspace() {
                                     type="radio"
                                     name="product"
                                     checked={productId === p.id}
-                                    onChange={() => setProductId(p.id)}
+                                    onChange={() => {
+                                      setProductId(p.id);
+                                    }}
                                   />
                                   <span>
                                     <strong>{p.name}</strong>
@@ -1075,7 +1088,9 @@ export function SimulationWorkspace() {
                                     type="radio"
                                     name="product"
                                     checked={!productId}
-                                    onChange={() => setProductId('')}
+                                    onChange={() => {
+                                      setProductId('');
+                                    }}
                                   />
                                   <span>Sem produto</span>
                                 </label>
@@ -1090,24 +1105,68 @@ export function SimulationWorkspace() {
                                 </p>
                               )}
                           </fieldset>
-                          <fieldset disabled={frozen}>
-                            <legend>
-                              <b>3</b>Onde vamos simular?
-                            </legend>
-                            <div className="choice-pills">
-                              {procedure.regions.map((r) => (
-                                <label className="choice-pill" key={r}>
-                                  <input
-                                    type="checkbox"
-                                    checked={regions.includes(r)}
-                                    onChange={() => toggleRegion(r)}
-                                  />
-                                  <span>{r}</span>
-                                </label>
-                              ))}
+                          {planningStep === 2 && (
+                            <div className="planning-navigation">
+                              <button
+                                type="button"
+                                className="text-button"
+                                onClick={() => setPlanningStep(1)}
+                              >
+                                Voltar
+                              </button>
+                              <Button
+                                type="button"
+                                className="app-button"
+                                disabled={
+                                  procedure.requires_product && !productId
+                                }
+                                onClick={() => setPlanningStep(3)}
+                              >
+                                Continuar
+                                <ArrowRight size={15} />
+                              </Button>
                             </div>
-                          </fieldset>
-                          {regions.length > 0 && (
+                          )}
+                          {planningStep >= 3 && (
+                            <fieldset disabled={frozen}>
+                              <legend>
+                                <b>3</b>Onde vamos simular?
+                              </legend>
+                              <div className="choice-pills">
+                                {procedure.regions.map((r) => (
+                                  <label className="choice-pill" key={r}>
+                                    <input
+                                      type="checkbox"
+                                      checked={regions.includes(r)}
+                                      onChange={() => toggleRegion(r)}
+                                    />
+                                    <span>{r}</span>
+                                  </label>
+                                ))}
+                              </div>
+                              {!session && planningStep === 3 && (
+                                <div className="planning-navigation">
+                                  <button
+                                    type="button"
+                                    className="text-button"
+                                    onClick={() => setPlanningStep(2)}
+                                  >
+                                    Voltar
+                                  </button>
+                                  <Button
+                                    type="button"
+                                    className="app-button"
+                                    disabled={!regions.length}
+                                    onClick={() => setPlanningStep(4)}
+                                  >
+                                    Continuar
+                                    <ArrowRight size={15} />
+                                  </Button>
+                                </div>
+                              )}
+                            </fieldset>
+                          )}
+                          {regions.length > 0 && planningStep >= 4 && (
                             <section className="region-planning">
                               <div className="region-planning-heading">
                                 <b>4</b>
@@ -1174,58 +1233,84 @@ export function SimulationWorkspace() {
                                 Estes parâmetros orientam a imagem e não
                                 representam dose ou resultado clínico previsto.
                               </p>
+                              {!session && planningStep === 4 && (
+                                <div className="planning-navigation">
+                                  <button
+                                    type="button"
+                                    className="text-button"
+                                    onClick={() => setPlanningStep(3)}
+                                  >
+                                    Voltar
+                                  </button>
+                                  <Button
+                                    type="button"
+                                    className="app-button"
+                                    disabled={!regionParametersComplete}
+                                    onClick={() => setPlanningStep(5)}
+                                  >
+                                    Continuar
+                                    <ArrowRight size={15} />
+                                  </Button>
+                                </div>
+                              )}
                             </section>
                           )}
-                          {procedure.questions.map((q, i) => (
-                            <fieldset key={q.id} disabled={frozen}>
-                              <legend>
-                                <b>{i + 5}</b>
-                                {q.label}
-                              </legend>
-                              <div className="choice-pills">
-                                {q.options.map((o) => (
-                                  <label className="choice-pill" key={o}>
-                                    <input
-                                      type="radio"
-                                      name={q.id}
-                                      checked={answers[q.id] === o}
-                                      onChange={() =>
-                                        setAnswers((prev) => ({
-                                          ...prev,
-                                          [q.id]: o,
-                                        }))
-                                      }
-                                    />
-                                    <span>{o}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </fieldset>
-                          ))}
-                          {product && (
-                            <label>
-                              Quantidade planejada{' '}
-                              {product.unit && `(${product.unit})`}
-                              <input
-                                disabled={frozen}
-                                value={quantity}
-                                onChange={(e) => setQuantity(e.target.value)}
-                                maxLength={80}
-                                placeholder="Opcional, definida pela profissional"
-                              />
-                            </label>
+                          {planningStep >= 5 && (
+                            <>
+                              {procedure.questions.map((q, i) => (
+                                <fieldset key={q.id} disabled={frozen}>
+                                  <legend>
+                                    <b>{i + 5}</b>
+                                    {q.label}
+                                  </legend>
+                                  <div className="choice-pills">
+                                    {q.options.map((o) => (
+                                      <label className="choice-pill" key={o}>
+                                        <input
+                                          type="radio"
+                                          name={q.id}
+                                          checked={answers[q.id] === o}
+                                          onChange={() =>
+                                            setAnswers((prev) => ({
+                                              ...prev,
+                                              [q.id]: o,
+                                            }))
+                                          }
+                                        />
+                                        <span>{o}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </fieldset>
+                              ))}
+                              {product && (
+                                <label>
+                                  Quantidade planejada{' '}
+                                  {product.unit && `(${product.unit})`}
+                                  <input
+                                    disabled={frozen}
+                                    value={quantity}
+                                    onChange={(e) =>
+                                      setQuantity(e.target.value)
+                                    }
+                                    maxLength={80}
+                                    placeholder="Opcional, definida pela profissional"
+                                  />
+                                </label>
+                              )}
+                              <label>
+                                Observações da profissional
+                                <textarea
+                                  disabled={frozen}
+                                  value={notes}
+                                  onChange={(e) => setNotes(e.target.value)}
+                                  rows={3}
+                                  maxLength={1500}
+                                  placeholder="Descreva o objetivo e o que deve ser preservado."
+                                />
+                              </label>
+                            </>
                           )}
-                          <label>
-                            Observações da profissional
-                            <textarea
-                              disabled={frozen}
-                              value={notes}
-                              onChange={(e) => setNotes(e.target.value)}
-                              rows={3}
-                              maxLength={1500}
-                              placeholder="Descreva o objetivo e o que deve ser preservado."
-                            />
-                          </label>
                         </>
                       )}
                       {session && (
@@ -1234,62 +1319,67 @@ export function SimulationWorkspace() {
                           nova simulação.
                         </p>
                       )}
-                      <label className="check-line consent-line">
-                        <input
-                          type="checkbox"
-                          checked={consent}
-                          disabled={frozen}
-                          onChange={(e) => setConsent(e.target.checked)}
-                        />
-                        <span>
-                          Tenho autorização para enviar estas fotos ao serviço
-                          de IA para simulação.
-                        </span>
-                      </label>
-                      {!service.gemini && (
+                      {(planningStep >= 5 || session) && (
+                        <label className="check-line consent-line">
+                          <input
+                            type="checkbox"
+                            checked={consent}
+                            disabled={frozen}
+                            onChange={(e) => setConsent(e.target.checked)}
+                          />
+                          <span>
+                            Tenho autorização para enviar estas fotos ao serviço
+                            de IA para simulação.
+                          </span>
+                        </label>
+                      )}
+                      {!service.gemini && (planningStep >= 5 || session) && (
                         <p className="app-hint">
                           A geração será habilitada após a conexão do serviço de
                           imagens.
                         </p>
                       )}
-                      {busy ? (
-                        <Button
-                          className="app-button secondary full"
-                          disabled={pauseRequested}
-                          onClick={() => {
-                            pause.current = true;
-                            setPauseRequested(true);
-                          }}
-                        >
-                          <Pause size={16} />
-                          {pauseRequested
-                            ? 'Pausando após a foto atual…'
-                            : 'Pausar após a foto atual'}
-                        </Button>
-                      ) : (
-                        <Button
-                          className="app-button full generate-button"
-                          disabled={
-                            !service.member ||
-                            !service.gemini ||
-                            !canPlan ||
-                            !consent ||
-                            complete === photos.length
-                          }
-                          onClick={() => void generate()}
-                        >
-                          <WandSparkles size={18} />
-                          {session
-                            ? 'Continuar simulações'
-                            : 'Gerar simulações'}
-                          <span>{photos.length - complete}</span>
-                        </Button>
+                      {(planningStep >= 5 || session) &&
+                        (busy ? (
+                          <Button
+                            className="app-button secondary full"
+                            disabled={pauseRequested}
+                            onClick={() => {
+                              pause.current = true;
+                              setPauseRequested(true);
+                            }}
+                          >
+                            <Pause size={16} />
+                            {pauseRequested
+                              ? 'Pausando após a foto atual…'
+                              : 'Pausar após a foto atual'}
+                          </Button>
+                        ) : (
+                          <Button
+                            className="app-button full generate-button"
+                            disabled={
+                              !service.member ||
+                              !service.gemini ||
+                              !canPlan ||
+                              !consent ||
+                              complete === photos.length
+                            }
+                            onClick={() => void generate()}
+                          >
+                            <WandSparkles size={18} />
+                            {session
+                              ? 'Continuar simulações'
+                              : 'Gerar simulações'}
+                            <span>{photos.length - complete}</span>
+                          </Button>
+                        ))}
+                      {(planningStep >= 5 || session) && (
+                        <p className="generation-caption">
+                          Simulação ilustrativa por IA.
+                          <br />
+                          Revise antes de apresentar à paciente.
+                        </p>
                       )}
-                      <p className="generation-caption">
-                        Simulação ilustrativa por IA.
-                        <br />
-                        Revise antes de apresentar à paciente.
-                      </p>
                     </div>
                   )}
                 </aside>

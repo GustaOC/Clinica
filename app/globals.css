@@ -690,6 +690,17 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+.planning-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #edf1f8;
+}
+.planning-navigation .app-button {
+  min-height: 42px;
+}
 .choice-pill {
   position: relative;
   cursor: pointer;
