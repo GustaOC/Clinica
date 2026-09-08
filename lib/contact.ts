@@ -14,7 +14,7 @@ export function whatsappUrl(
   if (!/^[+\d\s().-]+$/.test(value)) return null;
   const digits = value.replace(/\D/g, '');
   if (!/^55[1-9]\d{9,10}$/.test(digits)) return null;
-  return `https://wa.me/${digits}?text=${encodeURIComponent(`Olá! Gostaria de informações sobre ${subject} na Lumina.`)}`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(`Olá! Gostaria de informações sobre ${subject}.`)}`;
 }
 
 export function phoneUrl(value: string): string | null {

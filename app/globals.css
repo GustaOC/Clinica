@@ -87,35 +87,6 @@
   padding: 34px 19px 0;
   z-index: 30;
 }
-.app-brand {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin: 0 9px 45px;
-}
-.app-brand > span {
-  width: 42px;
-  height: 45px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  color: #2d62df;
-  background: #edf3ff;
-}
-.app-brand > div {
-  font-size: 29px;
-  line-height: 1.05;
-  font-weight: 600;
-  letter-spacing: -1.4px;
-}
-.app-brand small {
-  display: block;
-  margin-top: 7px;
-  letter-spacing: 1.5px;
-  font-size: 7px;
-  font-weight: 600;
-  color: #8b97a9;
-}
 .sidebar-label {
   margin: 0 14px 14px;
   font-size: 9px;
@@ -1220,7 +1191,7 @@
 }
 .workspace-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 15px;
   padding: 22px 36px;
   border-top: 1px solid #e8edf5;
@@ -1498,17 +1469,6 @@
   padding-bottom: 40px;
   background: #f6f8fc;
 }
-.information-header {
-  height: 76px;
-  display: flex;
-  align-items: center;
-  padding: 0 36px;
-  background: #fff;
-  border-bottom: 1px solid #e7edf5;
-}
-.information-header .app-brand {
-  margin: 0;
-}
 .info-page {
   max-width: 740px;
   margin: 50px auto;
@@ -1615,10 +1575,6 @@
   .app-body {
     margin-left: 76px;
   }
-  .app-brand {
-    margin: 0 6px 30px;
-  }
-  .app-brand > div,
   .sidebar-label,
   .sidebar-note,
   .sidebar-profile > div,
@@ -1671,21 +1627,6 @@
     border-bottom: 1px solid #e5edf8;
     align-items: center;
     gap: 15px;
-  }
-  .app-brand {
-    margin: 0 auto 0 0;
-  }
-  .app-brand > span {
-    width: 35px;
-    height: 36px;
-    border-radius: 10px;
-  }
-  .app-brand > div {
-    display: block;
-    font-size: 22px;
-  }
-  .app-brand small {
-    display: none;
   }
   .app-sidebar nav {
     display: flex;
@@ -1829,21 +1770,11 @@
     margin: 25px 15px;
     padding: 25px;
   }
-  .information-header {
-    height: 67px;
-    padding-inline: 16px;
-  }
 }
 @media (max-width: 430px) {
   .app-sidebar {
     padding-inline: 12px;
     gap: 8px;
-  }
-  .app-sidebar .app-brand > div {
-    display: none;
-  }
-  .app-brand {
-    gap: 7px;
   }
   .app-sidebar nav {
     gap: 1px;

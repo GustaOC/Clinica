@@ -1,4 +1,4 @@
-# Lumina — sistema de simulação estética
+# Sistema de simulação estética
 
 Sistema web privado em Next.js para a profissional criar um planejamento e gerar uma simulação por IA para cada fotografia enviada. Não há procedimentos, produtos, profissionais ou fotografias demonstrativos: o catálogo começa vazio e recebe somente dados reais da clínica.
 

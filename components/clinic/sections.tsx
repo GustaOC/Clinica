@@ -39,7 +39,7 @@ export function PublicSections() {
           </div>
           <p className="section-description">
             {clinic.specialties.length
-              ? 'Explore as áreas de atuação da Lumina e converse com a equipe para saber mais.'
+              ? 'Explore as áreas de atuação e converse com a equipe para saber mais.'
               : 'As especialidades serão publicadas após confirmação da clínica. Sem informações presumidas sobre os atendimentos.'}
           </p>
         </div>

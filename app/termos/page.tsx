@@ -3,15 +3,15 @@ import { InformationPage } from '@/components/clinic/information-page';
 
 export const metadata: Metadata = {
   title: 'Termos de Uso — em preparação',
-  description: 'Informações provisórias de uso do site Lumina.',
+  description: 'Informações provisórias de uso do sistema clínico.',
   openGraph: {
-    title: 'Termos de Uso — Lumina',
+    title: 'Termos de Uso',
     description: 'Termos em preparação e sujeitos à validação da clínica.',
     images: [],
   },
   twitter: {
     card: 'summary',
-    title: 'Termos de Uso — Lumina',
+    title: 'Termos de Uso',
     description: 'Termos em preparação e sujeitos à validação da clínica.',
     images: [],
   },

@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { type Contact, phoneUrl } from '@/lib/contact';
-import { Brand } from './brand';
 import { AppointmentButton } from './appointment-button';
 
 export const navigation = [
@@ -27,7 +26,6 @@ export function Header({ contact }: { contact: Contact }) {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <Brand />
         <nav className="desktop-nav" aria-label="Navegação principal">
           {navigation.map(([title, id]) => (
             <Link key={id} href={`/#${id}`}>
@@ -65,7 +63,7 @@ export function Header({ contact }: { contact: Contact }) {
               showCloseButton={false}
             >
               <div className="mobile-nav-heading">
-                <DialogTitle>Explore a Lumina</DialogTitle>
+                <DialogTitle>Explore o sistema</DialogTitle>
                 <DialogClose
                   render={
                     <Button

@@ -5,25 +5,24 @@ import './globals.css';
 import { siteOrigin } from '@/lib/contact';
 
 const description =
-  'Sistema clínico Lumina: planejamento de procedimentos, catálogo e simulações visuais para revisão profissional.';
+  'Sistema clínico para planejamento de procedimentos, catálogo e simulações visuais para revisão profissional.';
 const origin = siteOrigin(process.env);
 
 export const metadata: Metadata = {
   metadataBase: origin,
-  title: { default: 'Lumina | Simulações estéticas', template: '%s | Lumina' },
+  title: 'Sistema de simulações',
   description,
-  icons: { icon: '/favicon.svg' },
   robots: { index: false, follow: false }, // Enable only after official content review.
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    title: 'Lumina | Sistema clínico',
+    title: 'Sistema de simulações',
     description,
     images: [],
   },
   twitter: {
     card: 'summary',
-    title: 'Lumina | Sistema clínico',
+    title: 'Sistema de simulações',
     description,
     images: [],
   },

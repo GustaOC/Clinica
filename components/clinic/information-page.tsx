@@ -1,4 +1,4 @@
-import { ArrowLeft, Info, Sparkles } from 'lucide-react';
+import { ArrowLeft, Info } from 'lucide-react';
 import Link from 'next/link';
 
 export function InformationPage({
@@ -10,20 +10,6 @@ export function InformationPage({
 }) {
   return (
     <div className="system-information-shell">
-      <header className="information-header">
-        <Link
-          href="/"
-          className="app-brand"
-          aria-label="Lumina — sistema clínico"
-        >
-          <span>
-            <Sparkles size={24} />
-          </span>
-          <div>
-            lumina<small>CLINICAL WORKSPACE</small>
-          </div>
-        </Link>
-      </header>
       <main id="conteudo" className="info-page">
         <Link className="back-link" href="/">
           <ArrowLeft size={16} aria-hidden="true" />

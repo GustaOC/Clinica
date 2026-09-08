@@ -45,3 +45,16 @@ test('public route does not load the legacy dashboard or previous identity provi
   );
   assert.doesNotMatch(page, /requireChatGPTUser|clinic-app|oai-authenticated/);
 });
+test('published interface has no provisional brand or brand artwork', async () => {
+  const visibleSources = await Promise.all(
+    ['../app/layout.tsx', '../components/simulation/workspace.tsx'].map(
+      (path) => readFile(new URL(path, import.meta.url), 'utf8'),
+    ),
+  );
+  assert.doesNotMatch(visibleSources.join('\n'), /\bLumina\b/i);
+  for (const path of ['../public/favicon.svg', '../public/og.png'])
+    await assert.rejects(
+      readFile(new URL(path, import.meta.url)),
+      (error) => error?.code === 'ENOENT',
+    );
+});

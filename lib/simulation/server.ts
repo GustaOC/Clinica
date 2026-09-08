@@ -38,11 +38,11 @@ export async function saveSession(session: Session | null) {
     sameSite: 'strict' as const,
     path: '/',
   };
-  jar.set('lumina-access', session?.access_token || '', {
+  jar.set('clinic-access', session?.access_token || '', {
     ...options,
     maxAge: session ? session.expires_in : 0,
   });
-  jar.set('lumina-refresh', session?.refresh_token || '', {
+  jar.set('clinic-refresh', session?.refresh_token || '', {
     ...options,
     maxAge: session ? 86400 : 0,
   });
@@ -50,8 +50,8 @@ export async function saveSession(session: Session | null) {
 export async function authenticated() {
   const db = database(),
     jar = await cookies();
-  const access_token = jar.get('lumina-access')?.value,
-    refresh_token = jar.get('lumina-refresh')?.value;
+  const access_token = jar.get('clinic-access')?.value,
+    refresh_token = jar.get('clinic-refresh')?.value;
   if (!refresh_token)
     throw new SimulationError('Entre com sua conta para continuar.', 401);
   const { data: auth, error } = access_token

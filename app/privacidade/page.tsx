@@ -3,15 +3,15 @@ import { InformationPage } from '@/components/clinic/information-page';
 
 export const metadata: Metadata = {
   title: 'Política de Privacidade — em preparação',
-  description: 'Status da política de privacidade do sistema clínico Lumina.',
+  description: 'Status da política de privacidade do sistema clínico.',
   openGraph: {
-    title: 'Política de Privacidade — Lumina',
+    title: 'Política de Privacidade',
     description: 'Política em preparação e sujeita à validação da clínica.',
     images: [],
   },
   twitter: {
     card: 'summary',
-    title: 'Política de Privacidade — Lumina',
+    title: 'Política de Privacidade',
     description: 'Política em preparação e sujeita à validação da clínica.',
     images: [],
   },

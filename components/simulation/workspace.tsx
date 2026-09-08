@@ -7,7 +7,6 @@ import {
   type SyntheticEvent,
 } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import {
   ArrowDownToLine,
   ArrowRight,
@@ -473,18 +472,6 @@ export function SimulationWorkspace() {
   return (
     <div className="sim-app">
       <aside className="app-sidebar">
-        <Link
-          className="app-brand"
-          href="/"
-          aria-label="Lumina — sistema clínico"
-        >
-          <span>
-            <Sparkles size={25} />
-          </span>
-          <div>
-            lumina<small>CLINICAL WORKSPACE</small>
-          </div>
-        </Link>
         <p className="sidebar-label">ÁREA DE TRABALHO</p>
         <nav aria-label="Navegação do sistema">
           {(
@@ -1397,7 +1384,6 @@ export function SimulationWorkspace() {
           )}
         </main>
         <footer className="workspace-footer">
-          <span>Lumina · Sistema clínico</span>
           <span>Planejamento visual, com revisão profissional.</span>
         </footer>
       </div>

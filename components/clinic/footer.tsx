@@ -2,7 +2,6 @@ import { ArrowUpRight, Clock3, Mail, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { clinic } from '@/content/clinic';
 import { emailUrl, mapsUrl, phoneUrl } from '@/lib/contact';
-import { Brand } from './brand';
 
 export function Footer() {
   const { contact, legal } = clinic;
@@ -14,7 +13,6 @@ export function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Brand inverse />
             <p>
               Conheça a clínica.
               <br />
@@ -89,7 +87,7 @@ export function Footer() {
           </p>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Lumina.</span>
+          <span>© {new Date().getFullYear()}.</span>
           <span>Informação clara. Cuidado em primeiro lugar.</span>
         </div>
       </div>

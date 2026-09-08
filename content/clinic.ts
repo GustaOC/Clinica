@@ -20,8 +20,8 @@ export type Professional = {
 // Only enter clinic-approved, factual information here. Empty fields are deliberate.
 // Real, authorized photographs belong in public/images/, preferably as WebP.
 export const clinic = {
-  name: 'Lumina',
-  descriptor: 'Clínica estética',
+  name: '',
+  descriptor: '',
   contact: {
     whatsapp: process.env.CLINIC_WHATSAPP ?? '',
     phone: process.env.CLINIC_PHONE ?? '',
