@@ -1511,6 +1511,11 @@ function SettingsView({
           <p className="app-hint">
             O acesso é somente por e-mail e senha. Não há login pelo Google.
           </p>
+          {service.project && (
+            <p className="app-hint">
+              Projeto conectado: <code>{service.project}</code>
+            </p>
+          )}
           <ol>
             <li>Crie o projeto Supabase.</li>
             <li>Execute a migração de simulações incluída no projeto.</li>

@@ -10,21 +10,52 @@ import {
 } from '@/lib/simulation/server';
 import { record, SimulationError, textField } from '@/lib/simulation/types';
 
+function projectReference(url: string): string | undefined {
+  try {
+    const host = new URL(url).hostname;
+    return host.endsWith('.supabase.co') ? host.split('.')[0] : host;
+  } catch {
+    return undefined;
+  }
+}
+
+function loginFailure(code?: string): SimulationError {
+  if (code === 'email_not_confirmed')
+    return new SimulationError(
+      'O e-mail ainda não foi confirmado no Supabase.',
+      401,
+    );
+  if (code === 'email_provider_disabled' || code === 'provider_disabled')
+    return new SimulationError(
+      'O login por e-mail está desativado no Supabase.',
+      503,
+    );
+  if (code === 'user_banned')
+    return new SimulationError('Esta conta está bloqueada no Supabase.', 403);
+  return new SimulationError(
+    'Senha incorreta ou conta inexistente no projeto Supabase conectado.',
+    401,
+  );
+}
+
 export async function GET() {
   const config = configuration();
   if (!config.url || !config.key)
     return response({ configured: false, gemini: config.gemini, member: null });
+  const project = projectReference(config.url);
   try {
     const { user, member } = await authenticated();
     return response({
       configured: true,
       gemini: config.gemini,
+      project,
       member: { id: user.id, email: user.email, role: member.role },
     });
   } catch (error) {
     return response({
       configured: true,
       gemini: config.gemini,
+      project,
       member: null,
       message:
         error instanceof SimulationError && error.status !== 401
@@ -50,8 +81,7 @@ export async function POST(request: Request) {
       email,
       password,
     });
-    if (error || !data.session)
-      throw new SimulationError('E-mail ou senha inválidos.', 401);
+    if (error || !data.session) throw loginFailure(error?.code);
     const { data: member, error: memberError } = await db
       .from('aesthetic_members')
       .select('role')
@@ -67,6 +97,7 @@ export async function POST(request: Request) {
     return response({
       configured: true,
       gemini: configuration().gemini,
+      project: projectReference(configuration().url),
       member: { id: data.user.id, email: data.user.email, role: member.role },
     });
   } catch (error) {

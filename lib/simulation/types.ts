@@ -53,6 +53,7 @@ export type WorkspaceStatus = {
   configured: boolean;
   gemini: boolean;
   member: Member | null;
+  project?: string;
   message?: string;
 };
 export const REGIONS = [
