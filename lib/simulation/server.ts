@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { SimulationError } from './types';
 
 export const BUCKET = 'aesthetic-photos';
+const PERSISTENT_SESSION_SECONDS = 60 * 60 * 24 * 400;
 export function configuration() {
   return {
     url: process.env.SUPABASE_URL || process.env.NEXT_SUPABASE_URL || '',
@@ -44,7 +45,7 @@ export async function saveSession(session: Session | null) {
   });
   jar.set('clinic-refresh', session?.refresh_token || '', {
     ...options,
-    maxAge: session ? 86400 : 0,
+    maxAge: session ? PERSISTENT_SESSION_SECONDS : 0,
   });
 }
 export async function authenticated() {
