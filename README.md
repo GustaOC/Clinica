@@ -33,6 +33,10 @@ Sem as variáveis, a interface abre normalmente em estado de configuração e n�
 3. Em Authentication > Users, crie a conta `admin@clinica.com.br` com uma senha inicial forte. A senha não deve ser colocada no código.
 4. No SQL Editor, execute o arquivo `supabase/bootstrap-admin.sql`. Ele encontra essa conta pelo e-mail e libera o papel `admin`.
 
+Para testes, execute depois `supabase/seed-test-catalog.sql`. Ele inclui um
+catálogo amplo de simulações e produtos genéricos claramente marcados como
+`TESTE`; substitua esses produtos pelos itens reais e regularizados da clínica.
+
 Para outra profissional, crie o usuário e adicione seu UUID com o papel `doctor`. Uma conta de Authentication sem linha ativa em `aesthetic_members` não acessa o sistema. O aplicativo utiliza apenas e-mail e senha e não habilita login pelo Google.
 
 5. Em Project Settings > API, copie a Project URL e a chave publishable. Se o projeto ainda mostrar somente a chave `anon`, ela também é aceita pelo código via `SUPABASE_ANON_KEY`. Instalações já configuradas com `NEXT_SUPABASE_URL` e `NEXT_SUPABASE_ANON_KEY` também são compatíveis, mas os nomes recomendados são `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`.
@@ -87,6 +91,6 @@ Os testes locais usam somente fixtures sintéticas e respostas Gemini simuladas;
 
 - O navegador comprime a foto para até 2,5 MB; o servidor decodifica, remove metadados e grava JPEG no bucket privado.
 - Originais e resultados ficam sob o UUID da conta responsável. Outra conta habilitada não lê essas sessões ou arquivos.
-- Cookies de sessão são `HttpOnly`, `SameSite=Strict` e `Secure` em produção.
+- Cookies de sessão são `HttpOnly`, `SameSite=Lax`, `Secure` em produção e renovados durante o uso.
 - A migração limita cada conta a duas gerações simultâneas e usa uma reivindicação atômica por foto para impedir duplo clique/cobrança duplicada.
 - Defina com a assessoria da clínica prazos de retenção, descarte, base legal, consentimento/autorização, operadores e transferências antes de processar fotografias reais.
